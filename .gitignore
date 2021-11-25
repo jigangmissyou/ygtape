@@ -1,0 +1,5 @@
+nbproject
+application/config.php
+application/database.php
+public/uploads
+public/static/files

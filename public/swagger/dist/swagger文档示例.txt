@@ -1,0 +1,156 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "OA系统接口文档"
+  termsOfService: ""
+host: "58.33.253.83:669"
+basePath: "/wap/public/index.php?s=/api/index/"
+tags:
+- name: "订单装箱"
+  description: ""
+
+schemes:
+- "http"
+- "https"
+paths:
+  /orderPack:
+    post:
+      tags: 
+        - "订单装箱"
+      summary: "提交订单装箱数据"
+      parameters: 
+        - in: "body"
+          name: "body"
+          description: "body传入参数"
+          required: true
+          schema: 
+            $ref: '#/definitions/orderPack'
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/successResponse'
+        "500":
+          description: 失败响应
+          schema:
+            $ref: '#/definitions/errorResponse'
+    
+  /upload:
+    post:
+      tags:
+      - "订单装箱"
+      summary: "上传装箱图片接口"
+      description: ""
+      operationId: "uploadFile"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "image"
+        in: "formData"
+        description: "图片上传"
+        required: true
+        type: "file"
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/successUploadResponse'
+        "500":
+          description: 失败响应
+          schema:
+            $ref: '#/definitions/errorResponse'
+
+definitions:
+  orderPack:
+    type: "object"
+    properties:
+      order_num: 
+        type: "string"
+        description: "订单编号"
+      sales_num: 
+        type: "string"
+        description: "销货单号"
+      pack_num:
+        type: "string"
+        description: "集装箱号"
+      attachment:
+        type: array
+        items:
+          $ref: '#/definitions/attachment'
+  
+  attachment:
+    type: "object"
+    properties:
+      id: 
+        type: "string"
+        description: "附件ID"
+      name: 
+        type: "string"
+        description: "名称"
+  
+  attachInfo:
+    type: "object"
+    properties:
+      id: 
+        type: "string"
+        description: "附件ID"
+      file_name: 
+        type: "string"
+        description: "附件名称" 
+      file_url: 
+        type: "string"
+        description: "附件URL地址" 
+      file_type :
+        type: "string"
+        description: "附件类型"
+
+  successResponse:
+    type: object
+    properties:
+      status:
+        type: "integer"
+        description: "状态码"
+      msg: 
+        type: "string"
+        description: "描述"
+      data:
+        type: "object"
+        description: "返回数据"
+       
+  successUploadResponse:
+    type: object
+    properties:
+      status:
+        type: "integer"
+        description: "状态码"
+      msg: 
+        type: "string"
+        description: "描述"
+      data:
+        $ref: '#/definitions/attachInfo'
+        
+  errorResponse:
+    type: object
+    properties:
+      status:
+        type: "integer"
+        description: "状态码"
+      msg: 
+        type: "string"
+        description: "描述"
+      data:
+        type: "object"
+        description: "返回数据"
+        
+
+      
+  
+  
+  
+
+  
+    
+  

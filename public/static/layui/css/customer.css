@@ -1,0 +1,28 @@
+.layui-form-label{
+    width: 80px;
+}
+.layui-input-block{
+    margin-left: 110px;
+}
+#meters{
+    display: none;
+}
+.layui-textarea{
+    padding: 10px;
+}
+.apply_table{
+    padding: 30px;
+}
+#meters{
+    display: none;
+}
+p{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
+.layui-table td, .layui-table th{
+    padding:1px;
+}
