@@ -3,6 +3,7 @@ namespace app\index\model;
 use think\Model;
 use think\Db;
 use app\index\model\HongYan;
+use Exception;
 use think\Cache;
 use think\Log;
 use PHPExcel_IOFactory;
@@ -19,6 +20,7 @@ class Bom extends Model{
     function __construct()
     {
         set_time_limit(0);
+        ini_set('memory_limit', '1024M');
         $this->db = Db::connect('db_con2');
     }
 
@@ -26,28 +28,37 @@ class Bom extends Model{
      * 查询存储过程
      */
     function getList($ddate, $dend, $cno = [], $download = 0){
-        $jsonParam = json_encode(['ddate'=>$ddate, 'dend'=>$dend, 'cno'=>$cno]);
-        $msg = '存储过程输入参数：'. $jsonParam;
-        Log::record($msg);
-        $result = Cache::get($jsonParam);
-        if (empty($result)) {
-            $result = $this->db->query('exec qbo_mcxq_erp :ddate,:dend,:cno',['ddate'=>$ddate,'dend'=>$dend,'cno'=>$cno]);
-            Cache::set($jsonParam, $result, 3600);
-        }
-        $msg = '存储过程输出结果：'. json_encode($result);
-        Log::record($msg);
-        if (!empty($result)) {
-            $result = $result[0];
-            if ($download) {
-                $this->download($result);
-                die;
+        try{
+            $jsonParam = json_encode(['ddate'=>$ddate, 'dend'=>$dend, 'cno'=>$cno]);
+            $msg = '存储过程输入参数：'. $jsonParam;
+            Log::record($msg);
+            $result = Cache::get($jsonParam);
+            if (empty($result)) {
+                $result = $this->db->query('exec qbo_mcxq_erp :ddate,:dend,:cno',['ddate'=>$ddate,'dend'=>$dend,'cno'=>$cno]);
+                if (!empty($result)) {
+                    Cache::set($jsonParam, $result, 3600);
+                }
             }
-            $result = $this->convertData($result);
-            // $result = $this->processExcel($result, $download, $jsonParam);
+            $msg = '存储过程输出结果：'. json_encode($result);
+            Log::record($msg);
+            if (!empty($result)) {
+                $result = $result[0];
+                $result = $this->convertData($result);
+                if ($download) {
+                    $this->download($result);
+                    die;
+                }
+                return $result;
+                // $result = $this->processExcel($result, $download, $jsonParam);
+            }
+        }catch(Exception $e){
+            $msg = '存储过程异常抛出：'. $e->getMessage();
+            Log::record($msg);
         }
-        return $result;
+        return [];
+        
     }
-
+    
     /**
      * 获取单耗
      */
@@ -201,7 +212,7 @@ class Bom extends Model{
             $item['hyjg'] = round($item['hyjg'], 2);
             $item['zf'] = round($item['zf']*100, 2) .'%';
             $item['bompfkz'] = round($item['bompfkz'], 2);
-            $item['dh'] = round($item['dh'], 2);
+            $item['dh'] = round($item['dh'], 4);
             $item['cldj'] = round($item['cldj'], 2);
             $item['dwcbzc'] = round($item['dwcbzc'], 2);
             $item['dwcbhj'] = round($this->compute($list, $item['mjbm']), 2);
@@ -333,30 +344,41 @@ class Bom extends Model{
                             ->setCellValue( 'Q'.$i, $item['jbyl'] )           
                             ->setCellValue( 'R'.$i, $item['jcyl'] )         
                             ->setCellValue( 'S'.$i, $item['bbwsdj'])
-                            ->setCellValue( 'T'.$i, '=MAX(S'.$i.',IFERROR(U'.$i.',))' ) //取价MAX
-                            ->setCellValue( 'U'.$i, $hongYanPrice )     //洪研价格
-                            ->setCellValue( 'V'.$i, '=(U'.$i.'-S'.$i.')/S'.$i.'' )  //涨幅
-                            ->setCellValue( 'W'.$i, $this->findDicount($item) )  //打折的数量
-                            ->setCellValue( 'X'.$i, $this->findBomWeight($item) ) //BOM平方克数
-                            ->setCellValue( 'Y'.$i, '=Q'.$i.'/R'.$i.'+W'.$i.'' ) //单耗
-                            ->setCellValue( 'Z'.$i, '=IF(LEFT(J'.$i.',1)="A",T'.$i.',SUMIFS(AA:AA,B:B,J'.$i.'))' )  //材料单价
-                            ->setCellValue( 'AA'.$i, '=Y'.$i.'*Z'.$i.'' )  //单位成本组成
-                            ->setCellValue( 'AB'.$i, '=SUMIFS(AA:AA,B:B,B'.$i.')' )//单位成本合计
-                            ->setCellValue( 'AC'.$i, '=IF(AND(F'.$i.'<>"",OR(G'.$i.'="卷",G'.$i.'="米",G'.$i.'="支")),"平方",G'.$i.')' )
-                            ->setCellValue( 'AD'.$i, '=IF(AND(F'.$i.'<>"",OR(G'.$i.'="卷",G'.$i.'="米",G'.$i.'="支")),AB'.$i.'/F'.$i.',AB'.$i.')' );
-                            $objActSheet->getStyle('Q'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('R'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('S'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('T'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('U'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('X'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('Y'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('Z'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('AA'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('AB'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('V'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);//设置百分比
-                            $objActSheet->getStyle('W'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
-                            $objActSheet->getStyle('AD'.$i)->getNumberFormat()->setFormatCode('_ * #,##0.000_ ;_ * -#,##0.000_ ;_ * "-"??_ ;_ @_ ');//设置会计格式
+                            ->setCellValue( 'T'.$i, $item['zdjg'] ) //取价MAX
+                            ->setCellValue( 'U'.$i, $item['hyjg'] )     //洪研价格
+                            ->setCellValue( 'V'.$i, $item['zf'] )  //涨幅
+                            ->setCellValue( 'W'.$i, $item['dzdsl']) //打折的数量
+                            ->setCellValue( 'X'.$i, $item['bompfkz']) //BOM平方克重
+                            ->setCellValue( 'Y'.$i, $item['dh'] ) //单耗
+                            ->setCellValue( 'Z'.$i, $item['cldj'] )  //材料单价
+                            ->setCellValue( 'AA'.$i, $item['dwcbzc'] )  //单位成本组成
+                            ->setCellValue( 'AB'.$i, $item['dwcbhj'] )//单位成本合计
+                            ->setCellValue( 'AC'.$i,  $item['mjfzdw'] )
+                            ->setCellValue( 'AD'.$i, $item['bomfzdwcb'] );
+                            // ->setCellValue( 'T'.$i, '=MAX(S'.$i.',IFERROR(U'.$i.',))' ) //取价MAX
+                            // ->setCellValue( 'U'.$i, $hongYanPrice )     //洪研价格
+                            // ->setCellValue( 'V'.$i, '=(U'.$i.'-S'.$i.')/S'.$i.'' )  //涨幅
+                            // ->setCellValue( 'W'.$i, $this->findDicount($item) )  //打折的数量
+                            // ->setCellValue( 'X'.$i, $this->findBomWeight($item) ) //BOM平方克数
+                            // ->setCellValue( 'Y'.$i, '=Q'.$i.'/R'.$i.'+W'.$i.'' ) //单耗
+                            // ->setCellValue( 'Z'.$i, '=IF(LEFT(J'.$i.',1)="A",T'.$i.',SUMIFS(AA:AA,B:B,J'.$i.'))' )  //材料单价
+                            // ->setCellValue( 'AA'.$i, '=Y'.$i.'*Z'.$i.'' )  //单位成本组成
+                            // ->setCellValue( 'AB'.$i, '=SUMIFS(AA:AA,B:B,B'.$i.')' )//单位成本合计
+                            // ->setCellValue( 'AC'.$i, '=IF(AND(F'.$i.'<>"",OR(G'.$i.'="卷",G'.$i.'="米",G'.$i.'="支")),"平方",G'.$i.')' )
+                            // ->setCellValue( 'AD'.$i, '=IF(AND(F'.$i.'<>"",OR(G'.$i.'="卷",G'.$i.'="米",G'.$i.'="支")),AB'.$i.'/F'.$i.',AB'.$i.')' );
+                            // $objActSheet->getStyle('Q'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('R'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('S'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('T'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('U'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('X'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('Y'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('Z'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('AA'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('AB'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('V'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);//设置百分比
+                            // $objActSheet->getStyle('W'.$i)->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);//设置会计格式
+                            // $objActSheet->getStyle('AD'.$i)->getNumberFormat()->setFormatCode('_ * #,##0.000_ ;_ * -#,##0.000_ ;_ * "-"??_ ;_ @_ ');//设置会计格式
             }
             $filename = 'Bom.xlsx';
             header('Content-Type: application/vnd.ms-execl');
