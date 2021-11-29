@@ -30,7 +30,6 @@ class Index extends Common{
      * 存货编码页面
      */
     public function index(){
-        $mapValue = config('map_log');
         return $this->fetch('goodsCode/index');
     }
 
@@ -84,7 +83,7 @@ class Index extends Common{
         $actionType = $this->_request('get.action_type');
         $result = $this->actionLog->getList($actionType, $ticketNo);
         if (!empty($result)) {
-            $mapLog = config('map_log');
+            $mapLog = config('web.map_log');
             foreach ($result as &$item) {
                 if (array_key_exists($item['action_type'], $mapLog)) {
                     $mapData = $mapLog[$item['action_type']];

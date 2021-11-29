@@ -14,6 +14,5 @@ return [
                     'price_without_tax' => '不含税价格'
                 ]
         ],
-        'test' => 111,
 ];
 ?>
