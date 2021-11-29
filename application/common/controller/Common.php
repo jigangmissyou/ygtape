@@ -21,6 +21,17 @@ class Common extends Controller{
         return $this->jsonApi($response);
     }
 
+    public function _request($key, $default = '', $isUtf8 = 0){
+        if (!$isUtf8) {
+            return iconv('UTF-8', 'GBK', input($key, $default));
+        }
+        return input($key, $default);
+    }
+
+    public function _convertGbk2Utf8($value){
+            return iconv('GBK', 'UTF-8', $value);
+    }
+
     private function jsonApi($data){
         return json($data,200,array(
             "Access-Control-Allow-Origin"=>" *",

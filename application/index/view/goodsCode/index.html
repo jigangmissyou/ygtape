@@ -10,10 +10,30 @@
     <link rel="stylesheet" type="text/css" href="/general/guojigang/public/static/layui/css/customer.css">
 </head>
 <body>
+  <div class="layui-fluid" id="edit_chbm" style="display: none;">
+    <div class="layui-row" id="popSearchRoleTest">
+        <div class="layui-col-md11">
+            <form class="layui-form" lay-filter="test" style = "margin-top: 20px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">存货编码</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="id" id="#chbm_id" value="">
+                        <input type="text" name="code" id="#chbm_code" class="layui-input" value = "xxxxxxxx">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" lay-submit="" lay-filter="edit-goods-code" class="layui-btn layui-btn-normal">xiugai</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="layui-fluid" id="LAY-component-grid-list">
     存货编码：
   <div class="layui-inline">
-    <input class="layui-input" name="code" id="demoReload" autocomplete="off">
+    <input class="layui-input" name="code" id="chbmReload" autocomplete="off">
   </div>
   <div class="layui-input-inline">
     <input type="text" class="layui-input" name="ddate" id="ddate" placeholder="yyyy-MM-dd">
@@ -37,7 +57,7 @@
 <div>
 </div>
 <script src="/general/guojigang/public/static/layui/layui.js" charset="utf-8"></script>
-<script src="/general/guojigang/public/static/layui/goodsCode/index.js?v=1" charset="utf-8"></script>
+<script src="/general/guojigang/public/static/layui/goodsCode/index.js?v=3" charset="utf-8"></script>
 <script src="/general/guojigang/public/static/layui/dropdown.js" charset="utf-8"></script>
 <script src="/general/guojigang/public/static/layui/jquery.min.js"></script>
 </body>

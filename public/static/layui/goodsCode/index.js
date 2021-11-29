@@ -284,16 +284,16 @@
     }
 
     function selectRole1(path, title, area1 = '50%', area2 = '50%'){
-        layer.open({
-            //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-            type:2,
-            title:title,
-            area: [area1,area2],
-            content:path,
-            success: function(obj, index){
-                form.render();
-            }
-        });
+            layer.open({
+                //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                type:2,
+                title:title,
+                area: [area1,area2],
+                content:path,
+                success: function(obj, index){
+                    form.render();
+                }
+            });    
     }
 
     function showDropDownPanel( path, area1 = '50%', area2 = '50%'){
@@ -311,9 +311,14 @@
 
     var $ = layui.$, active = {
         reload: function(){
-          var demoReload = $('#demoReload');
+          var hyCode = $('#hyCode');
+          var hyItemName = $('#itemName');
+          var beginDate = $('#ddate1');
+          var endDate = $('#ddate2');
+
+          var chbmReload = $('#chbmReload');
           var ddate = $('#ddate');
-          
+
           //执行重载
           table.reload('cunhuobm_list', {
             page: {
@@ -321,20 +326,11 @@
             }
             ,where: {
               key: {
-                code: demoReload.val(),
+                code: chbmReload.val(),
                 date: ddate.val()
               }
             }
           });
-        }
-    };
-
-    var $ = layui.$, active = {
-        reload: function(){
-          var hyCode = $('#hyCode');
-          var hyItemName = $('#itemName');
-          var beginDate = $('#ddate1');
-          var endDate = $('#ddate2');
 
           
           //执行重载

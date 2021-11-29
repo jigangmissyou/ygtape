@@ -87,6 +87,7 @@ class GoodsCode extends Model{
         $goodsCode->code = $code;
         $goodsCode->uname = $uname;
         $goodsCode->ctime = $date;
+        $goodsCode->mtime = $date;
         $goodsCode->save();
     }
 

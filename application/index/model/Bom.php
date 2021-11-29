@@ -45,8 +45,7 @@ class Bom extends Model{
                 $result = $result[0];
                 $result = $this->convertData($result);
                 if ($download) {
-                    $this->download($result);
-                    die;
+                    return $this->download($result);
                 }
                 return $result;
                 // $result = $this->processExcel($result, $download, $jsonParam);
