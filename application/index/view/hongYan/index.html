@@ -11,10 +11,28 @@
 </head>
 <body>
 <div class="layui-fluid" id="LAY-component-grid-list">
+    编码：
+  <div class="layui-inline">
+    <input class="layui-input" name="code" id="hyCode" autocomplete="off">
+  </div>
+   名称:
+  <div class="layui-inline">
+    <input class="layui-input" name="item_name" id="itemName" autocomplete="off">
+  </div>
+  开始时间:
+  <div class="layui-input-inline">
+    <input type="text" class="layui-input" name="ddate1" id="ddate1" placeholder="yyyy-MM-dd">
+  </div>
+  结束时间:
+  <div class="layui-input-inline">
+    <input type="text" class="layui-input" name="ddate2" id="ddate2" placeholder="yyyy-MM-dd">
+  </div>
+  <button class="layui-btn layui-btn-sm" data-type="reload">搜索</button>
     <table id="hongyan_list" lay-filter="user"></table>
 </div>
 <script type="text/html" id="colHongYanBar">
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="hy_edit">编辑</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="hy_log">变更日志</a>
 </script>
 <script type="text/html" id="hongYanBar">
     <a class="layui-btn layui-btn-sm" lay-event="hy_add">新增洪研价格</a>

@@ -1,7 +1,8 @@
-    layui.use(['form', 'table', 'laydate'], function(){
+    layui.use(['form', 'table', 'laydate', 'element'], function(){
     var table = layui.table;
     var form = layui.form;
     var laydate = layui.laydate;
+    // var element = layui.element;
     const addGoodsCodeUrl = "/general/guojigang/public/index/index/addGoodsCode";
     const delGoodsCodeUrl = "/general/guojigang/public/index/index/delGoodsCode";
     const editGoodsCodeUrl = "/general/guojigang/public/index/index/editGoodsCode";
@@ -11,6 +12,8 @@
     const ajaxBomListUrl = "/general/guojigang/public/index/index/ajaxBomList";
     const ajaxHongYanListUrl = "/general/guojigang/public/index/index/ajaxHongYanList";
     const exportExcelUrl = "/general/guojigang/public/index/index/exportData";
+    const logUrl = "/general/guojigang/public/index/index/logList";
+    const ajaxFindInventoryUrl = "/general/guojigang/public/index/index/ajaxFindInventory";
     //用来存放 每一页 的 所有数据行 ID 的map集合
     var pageDataIdMap;
     //用来存放 我们勾选的数据行 ID 的map集合
@@ -134,7 +137,6 @@
     });
 
     table.on('tool(user)', function (obj) {
-        console.log(obj.event);
         switch(obj.event){
             case 'edit':
                 selectRole1(editGoodsCodeUrl+"?id="+obj.data.id, '编辑存货编码', '30%', '30%');
@@ -151,6 +153,12 @@
                 break;
             case 'hy_edit':
                 selectRole1(editHongYanUrl+"?id="+obj.data.id, '编辑洪研价格', '50%', '80%');
+                break;
+            case 'cubm_log':
+                showDropDownPanel(logUrl + '?ticket_no=' + obj.data.id + '&action_type=1');
+                break;
+            case 'hy_log':
+                showDropDownPanel(logUrl + '?ticket_no=' + obj.data.id + '&action_type=2');
                 break;
         }
     })
@@ -288,6 +296,19 @@
         });
     }
 
+    function showDropDownPanel( path, area1 = '50%', area2 = '50%'){
+        layer.open({
+            //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+            type:2,
+            title:'变更日志',
+            area: [area1,area2],
+            content:path,
+            success: function(obj, index){
+                form.render();
+            }
+        });
+    }
+
     var $ = layui.$, active = {
         reload: function(){
           var demoReload = $('#demoReload');
@@ -306,7 +327,32 @@
             }
           });
         }
-      };
+    };
+
+    var $ = layui.$, active = {
+        reload: function(){
+          var hyCode = $('#hyCode');
+          var hyItemName = $('#itemName');
+          var beginDate = $('#ddate1');
+          var endDate = $('#ddate2');
+
+          
+          //执行重载
+          table.reload('hongyan_list', {
+            page: {
+              curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+              key: {
+                code: hyCode.val(),
+                item_name: hyItemName.val(),
+                begin_date: beginDate.val(),
+                end_date: endDate.val(),
+              }
+            }
+          });
+        }
+    };
 
     $('.layui-fluid .layui-btn').on('click', function(){
     var type = $(this).data('type');
@@ -411,6 +457,28 @@
     laydate.render({
         elem: '#ddate'
     });
+    //常规用法
+    laydate.render({
+        elem: '#ddate1'
+    });
+    //常规用法
+    laydate.render({
+        elem: '#ddate2'
+    });
+    $("#zjbm").blur(function(){
+        let zjbm = $("#zjbm").val();
+        let item_name = $("#item_name").val();
+        let model_no = $("#model_no").val();
+        let unit = $("#unit").val();
+        $.ajax({
+            type: "GET",
+            url: ajaxFindInventoryUrl + '?code=' + zjbm,
+            success: function(returnData){
+                $("#item_name").val(returnData.data.cInvName);
+                $("#model_no").val(returnData.data.cInvStd);
+            }
+        })
+    })
 });
 
 

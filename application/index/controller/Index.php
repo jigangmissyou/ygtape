@@ -1,9 +1,11 @@
 <?php
 namespace app\index\controller;
 use app\common\controller\Common;
+use app\index\model\ActionLog;
 use app\index\model\GoodsCode;
 use app\index\model\Bom;
 use app\index\model\HongYan;
+use app\index\model\Inventory;
 use Exception;
 
 class Index extends Common{
@@ -11,6 +13,8 @@ class Index extends Common{
     private $goodsCode;
     private $bom;
     private $hongYan;
+    private $actionLog;
+    private $inventory;
 
     public function __construct()
     {
@@ -18,12 +22,15 @@ class Index extends Common{
         $this->goodsCode = new GoodsCode();
         $this->bom = new Bom();
         $this->hongYan = new HongYan();
+        $this->actionLog = new ActionLog();
+        $this->inventory = new Inventory();
     }
     
     /**
      * 存货编码页面
      */
     public function index(){
+        $mapValue = config('map_log');
         return $this->fetch('goodsCode/index');
     }
 
@@ -31,8 +38,6 @@ class Index extends Common{
      * 存货编码列表
      */
     public function ajaxGoodsCodeList(){
-        // var_dump($_GET);
-        // die;
         $page = input('get.page', 1);
         $limit = input('get.limit', 10);
         $code = input('get.key.code', '');
@@ -54,7 +59,8 @@ class Index extends Common{
                 $code = input('post.code');
                 if(empty($code)) throw Exception('参数不正确');
                 $date = date('Y-m-d', time());
-                $this->goodsCode->saveData('', $code, $date);
+                $uname = $_SESSION["LOGIN_BYNAME"];
+                $this->goodsCode->saveData('', $code, $date, $uname);
                 return $this->_success();      
             }catch(Exception $e){
                 return $this->_error($e->getMessage());
@@ -62,6 +68,44 @@ class Index extends Common{
         } else {
             return $this->_error('不支持其他的请求方式');
         }
+    }
+
+    /**
+     * Log记录列表
+     */
+    public function logList(){
+        $ticketNo = input('get.ticket_no');
+        $actionType = input('get.action_type');
+        $result = $this->actionLog->getList($actionType, $ticketNo);
+        if (!empty($result)) {
+            $mapLog = config('map_log');
+            foreach ($result as &$item) {
+                if (array_key_exists($item['action_type'], $mapLog)) {
+                    $mapData = $mapLog[$item['action_type']];
+                    if (array_key_exists($item['action_name'], $mapData)) {
+                        $item['action_name'] = $mapData[$item['action_name']];
+                    }
+                }
+                $item['from_data'] = iconv('GBK','UTF-8', $item['from_data']);
+                $item['to_data'] = iconv('GBK','UTF-8', $item['to_data']);
+                $item['uname'] = iconv('GBK','UTF-8', $item['uname']);
+                $item['ctime'] = date('Y-m-d H:i:s', $item['ctime']);
+                $item['mtime'] = date('Y-m-d H:i:s', $item['mtime']);
+            }
+        }
+        $uname = $time = '无';
+        // 变更人
+        if (!empty($result)) {
+            $uname = $result[0]['uname'];
+            $time = $result[0]['mtime'];
+        }
+        // 或者批量赋值
+        $this->assign([
+            'uname'  => $uname,
+            'time' => $time,
+            'list' => $result,
+        ]);
+        return $this->fetch('log/index');
     }
 
     /*
@@ -80,7 +124,8 @@ class Index extends Common{
                 $code = input('post.code');
                 if(empty($id) || empty($code)) throw Exception('参数不正确');
                 $date = date('Y-m-d', time());
-                $this->goodsCode->saveData($id, $code, $date);
+                $uname = $_SESSION["LOGIN_BYNAME"];
+                $this->goodsCode->saveData($id, $code, $date, $uname);
                 return $this->_success();      
             }catch(Exception $e){
                 return $this->_error($e->getMessage());
@@ -140,13 +185,14 @@ class Index extends Common{
             $param = [];
             $param['code'] = input('post.code');
             $param['item_name'] = iconv('UTF-8', 'GBK', input('post.item_name'));
-            $param['model_no'] = input('post.model_no');
+            $param['model_no'] = iconv('UTF-8', 'GBK',input('post.model_no'));
             $param['unit'] = iconv('UTF-8', 'GBK', input('post.unit'));
             $param['price_with_tax'] = input('post.price_with_tax');
             $param['currency_type'] = iconv('UTF-8', 'GBK', input('post.currency_type'));
             $param['local_currency'] = input('post.local_currency');
             $param['price_without_tax'] = input('post.price_without_tax');
-            $this->hongYan->saveData($param);
+            $uname = $_SESSION["LOGIN_BYNAME"];
+            $this->hongYan->saveData($param, $uname);
             return $this->_success();  
         }
     }
@@ -159,6 +205,8 @@ class Index extends Common{
             $id = $_GET['id'];
             $result = $this->hongYan->findData($id);
             $result['item_name'] = iconv('GBK','UTF-8', $result['item_name']);
+            $result['model_no'] = iconv('GBK','UTF-8', $result['model_no']);
+            $result['unit'] = iconv('GBK','UTF-8', $result['unit']);
             $result['currency_type'] = iconv('GBK','UTF-8', $result['currency_type']);
             $this->assign('detail', $result);
             return $this->fetch('hongyan/edit');
@@ -168,13 +216,14 @@ class Index extends Common{
                 $param['id'] = input('post.id');
                 $param['code'] = input('post.code');
                 $param['item_name'] = iconv('UTF-8', 'GBK', input('post.item_name'));
-                $param['model_no'] = input('post.model_no');
+                $param['model_no'] = iconv('UTF-8', 'GBK',input('post.model_no'));
                 $param['unit'] = iconv('UTF-8', 'GBK', input('post.unit'));
                 $param['price_with_tax'] = input('post.price_with_tax');
                 $param['currency_type'] = iconv('UTF-8', 'GBK', input('post.currency_type'));
                 $param['local_currency'] = input('post.local_currency');
                 $param['price_without_tax'] = input('price_without_tax');
-                $this->hongYan->saveData($param);
+                $uname = $_SESSION["LOGIN_BYNAME"];
+                $this->hongYan->saveData($param, $uname);
                 return $this->_success();  
             }catch(Exception $e){
                 return $this->_error($e->getMessage());
@@ -198,13 +247,27 @@ class Index extends Common{
     public function ajaxHongYanList(){
         $page = input('get.page', 1);
         $limit = input('get.limit', 10);
-        $result = $this->hongYan->getList($page, $limit);
+        $code = input('get.key.code', '');
+        $itemName = input('get.key.item_name', '');
+        $beginDate = input('get.key.begin_date', '');
+        $endDate = input('get.key.end_date', '');       
+        if (!empty($beginDate)) {
+            $beginDate = strtotime($beginDate);
+        }
+        if (!empty($endDate)) {
+            $endDate = strtotime($endDate.' 23:59:59');
+        }
+        $result = $this->hongYan->getList($page, $limit, $code, $itemName, $beginDate, $endDate);
         foreach($result as &$item){
             $item['item_name'] = iconv('GBK','UTF-8', $item['item_name']);
             $item['currency_type'] = iconv('GBK','UTF-8', $item['currency_type']);
+            $item['unit'] = iconv('GBK','UTF-8', $item['unit']);
+            $item['model_no'] = iconv('GBK','UTF-8', $item['model_no']);
+            $item['uname'] = iconv('GBK','UTF-8', $item['uname']);
             $item['ctime'] = date('Y-m-d H:i:s', $item['ctime']);
+            $item['mtime'] = date('Y-m-d H:i:s', $item['mtime']);
         }
-        $count = $this->hongYan->count();
+        $count = $this->hongYan->count($code, $itemName, $beginDate, $endDate);
         return $this->_success($result, $count);  
     }
 
@@ -217,6 +280,16 @@ class Index extends Common{
         $dend = date('Y-m-d');
         return $this->bom->getList($ddate, $dend, $code, 1);
     }
+
+    /**
+     * 根据code查询inventory
+     */
+    public function ajaxFindInventory(){
+        $code = input('get.code', '');
+        $result = $this->inventory->findByCode($code);
+        return $this->_success($result);
+    }
+
 
 }
 ?>

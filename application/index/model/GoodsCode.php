@@ -63,12 +63,20 @@ class GoodsCode extends Model{
     /**
      * 保存数据
      */
-    public function saveData($id, $code, $date){
+    public function saveData($id, $code, $date, $uname){
         if (!empty($id)) {
             $goodsCode = GoodsCode::get($id);
             if (empty($goodsCode)) {
                 throw Exception('没有查询到数据');
-            }   
+            }
+            $ret = $this->findDataByCode($code);
+            if (!empty($ret) && $ret['id'] != $id) {
+                throw Exception('此库存编码已经存在了');
+            }
+            $logModel = new ActionLog();
+            $oldArray = $newArray = $goodsCode->toArray();
+            $newArray['code'] = $code;
+            $logModel->insertLog($oldArray, $newArray, CHBM, $uname);
         } else {
             $ret = $this->findDataByCode($code);
             if (!empty($ret)) {
@@ -77,6 +85,7 @@ class GoodsCode extends Model{
             $goodsCode = $this;
         }
         $goodsCode->code = $code;
+        $goodsCode->uname = $uname;
         $goodsCode->ctime = $date;
         $goodsCode->save();
     }
@@ -92,5 +101,6 @@ class GoodsCode extends Model{
         }
         $goodsCode->delete();    
     }
+
 }
 ?>

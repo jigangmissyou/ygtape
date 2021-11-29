@@ -10,7 +10,15 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
-
+const CHBM = 1;
+const HYJG = 2;
+    //     'item_name' => '名称',
+    //     'model_no' => '规格型号',
+    //     'unit' => '单位',
+    //     'price_with_tax' => '含税价格',
+    //     'currency_type' => '币种',
+    //     'local_currency' => '本币价格',
+    //     'price_without_tax' => '不含税价格'
 
 /**
  * 返回跨域JSON数据
