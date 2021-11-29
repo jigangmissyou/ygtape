@@ -393,45 +393,17 @@
             dataType:"json",
             success: function(returnData){
                 if(returnData.status == 200){
-                    layer.open({
-                        type: 1
-                        ,offset: 'auto'
-                        ,id: 'layerDemo'
-                        ,content: '<div style="padding: 20px 100px;">'+ returnData.msg +'</div>'
-                        ,btn: '确定'
-                        ,btnAlign: 'c'
-                        ,shade: 0
-                        ,yes: function(){
-                            // layer.closeAll();
-                            window.parent.location.reload();
-                        },
-                        success: function(){
-                            // window.parent.location.reload();
-                            table.reload();
-                            //3.2  获得frame索引
-                            // var index = parent.layer.getFrameIndex(window.name);
-                            // //3.3   关闭当前frame
-                            // parent.layer.close(index);
-                            // //3.4   刷新页面
-                            // window.parent.location.reload();
-                        }
-                    });
+                    layer.alert(returnData.msg, {
+                        closeBtn: 0
+                      }, function(){
+                        window.parent.location.reload();
+                      });
                 }else{
-                    layer.open({
-                        type: 1
-                        ,offset: 'auto'
-                        ,id: 'layerDemo'
-                        ,content: '<div style="padding: 20px 100px;">'+ returnData.msg +'</div>'
-                        ,btn: '确定'
-                        ,btnAlign: 'c'
-                        ,shade: 0
-                        ,yes: function(){
-                            window.parent.location.reload();
-                        },
-                        success: function(){
-                            table.reload();
-                        }
-                    });
+                    layer.alert(returnData.msg, {
+                        closeBtn: 0
+                      }, function(){
+                        window.parent.location.reload();
+                      });
                 }
             }
         })
