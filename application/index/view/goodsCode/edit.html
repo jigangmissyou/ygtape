@@ -18,7 +18,7 @@
                     <label class="layui-form-label">存货编码</label>
                     <div class="layui-input-block">
                         <input type="hidden" name="id" id="#chbm_id" value="{$detail['id']}">
-                        <input type="text" name="code" id="#chbm_code" class="layui-input" value = "{$detail['code']}">
+                        <input type="text" name="code" id="#chbm_code" class="layui-input" required  lay-verify="required" value = "{$detail['code']}">
                     </div>
                 </div>
                 <div class="layui-form-item">
