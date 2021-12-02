@@ -299,6 +299,20 @@ class Index extends Common{
         return $this->_success($result);
     }
 
+    /**
+     * 根据code查询inventory
+     */
+    public function ajaxGetAll(){
+        $page = $this->_request('get.page', 1);
+        $limit = $this->_request('get.limit', 10);
+        $code = $this->_request('get.key.code');
+        $endPage = $limit*$page;
+        $beginPage = ($endPage - $limit) + 1;
+        $result = $this->inventory->getAll($beginPage, $endPage, $code);
+        $count = $this->inventory->getCount($code);
+        return $this->_success($result, $count);  
+    }
+
 
 }
 ?>

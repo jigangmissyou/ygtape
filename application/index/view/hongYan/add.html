@@ -10,6 +10,14 @@
     <link rel="stylesheet" type="text/css" href="/general/guojigang/public/static/layui/css/customer.css">
 </head>
 <body>
+    <div id="inventory_table" style="display: none;">
+        存货编码：
+        <div class="layui-inline">
+          <input class="layui-input" name="code" id="addReload" autocomplete="off">
+        </div>
+        <button class="layui-btn layui-btn-sm" id="hy_search">搜索</button>
+        <table id="inventory_list" lay-filter="user"></table>
+    </div>
 <div class="layui-fluid" id="LAY-component-grid-list">
     <div class="layui-row" id="popSearchRoleTest">
         <div class="layui-col-md11">
@@ -17,7 +25,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">子件编码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="code" id="zjbm" class="layui-input" required  lay-verify="required" placeholder="请输入子件编码" >
+                        <input type="text" name="code" id="zjbm" autocomplete="off" class="layui-input" required  lay-verify="required" placeholder="请输入子件编码" >
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -47,7 +55,15 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">币种</label>
                     <div class="layui-input-block">
-                        <input type="text" id="currency_type" name="currency_type" class="layui-input">
+                        <select name="currency_type" id="currency_type">
+                            <option value="人民币">人民币</option>
+                            <option value="美元">美元</option>
+                            <option value="欧元">欧元</option>
+                            <option value="英镑">英镑</option>
+                            <option value="日元">日元</option>
+                            <option value="澳元">澳元</option>
+                            <option value="瑞士法郎">瑞士法郎</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-form-item">

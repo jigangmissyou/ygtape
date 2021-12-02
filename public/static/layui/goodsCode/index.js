@@ -14,6 +14,8 @@
     const exportExcelUrl = "/general/guojigang/public/index/index/exportData";
     const logUrl = "/general/guojigang/public/index/index/logList";
     const ajaxFindInventoryUrl = "/general/guojigang/public/index/index/ajaxFindInventory";
+    const ajaxGetAllInventoryUrl = "/general/guojigang/public/index/index/ajaxGetAll";
+
     //用来存放 每一页 的 所有数据行 ID 的map集合
     var pageDataIdMap;
     //用来存放 我们勾选的数据行 ID 的map集合
@@ -136,6 +138,12 @@
         ,totalRow:true
     });
 
+    table.on('radio(user)', function(obj){ //test 是 table 标签对应的 lay-filter 属性
+        $("#item_name").val(obj.data.cInvName);
+        $("#zjbm").val(obj.data.cInvCCode);
+        $("#model_no").val(obj.data.cInvStd);
+      });
+
     table.on('tool(user)', function (obj) {
         switch(obj.event){
             case 'edit':
@@ -169,7 +177,7 @@
                 selectRole(1, '50%', '30%');
                 break;
             case 'hy_add':
-                selectRole(2, '50%', '70%');
+                selectRole(2, '50%', '90%');
                 break;
             case 'search':
                 // let data = table.checkStatus('cunhuobm_list').data; //idTest 即为基础参数 id 对应的值
@@ -317,6 +325,7 @@
           var endDate = $('#ddate2');
 
           var chbmReload = $('#chbmReload');
+          var addReload = $('#addReload');
           var ddate = $('#ddate');
 
           //执行重载
@@ -433,19 +442,79 @@
     laydate.render({
         elem: '#ddate2'
     });
-    $("#zjbm").blur(function(){
-        let zjbm = $("#zjbm").val();
-        let item_name = $("#item_name").val();
-        let model_no = $("#model_no").val();
-        let unit = $("#unit").val();
-        $.ajax({
-            type: "GET",
-            url: ajaxFindInventoryUrl + '?code=' + zjbm,
-            success: function(returnData){
-                $("#item_name").val(returnData.data.cInvName);
-                $("#model_no").val(returnData.data.cInvStd);
+    $("#zjbm").click(function(){
+        layer.open({
+            //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+            type:1,
+            title:"",
+            content: $("#inventory_table"),
+            offset:"lt",
+            success:function(){
+                //渲染存货编码
+            table.render({
+                elem: '#inventory_list'
+                ,url: ajaxGetAllInventoryUrl
+                ,limit: 10 //每页默认显示的数量
+                ,response: {
+                    statusName: 'status'
+                    ,statusCode: 200
+                    ,msgName: 'msg'
+                    ,countName: 'count'
+                    ,dataName: 'data'
+                }
+                ,cols: [[
+                     
+                    ,{field:'RowId', title: 'ID'}
+                    ,{field:'cInvName', title: '名称'}
+                    ,{field:'cInvCCode', title: '存货编码'}
+                    ,{field:'cInvStd', title:'规格型号'}
+                    ,{type: 'radio'}
+                ]]
+                ,id: 'inventory_list'
+                ,page: true
+                ,text: { none: '暂无相关数据' }
+                ,totalRow:true
+                ,done: function (res, curr, count){
+                    
+                    
+                }
+            });
+                form.render();
             }
+        });
+
+        $("#hy_search").click(function(){
+            var addReload = $('#addReload');
+            if (addReload.val().length != 0) {
+                if (new RegExp("^[\u4e00-\u9fa5]{0,}$").test(addReload.val())) {
+                    layer.alert("不能含有汉字");
+                    return false;
+                }
+            }
+            //执行重载
+            table.reload('inventory_list', {
+                page: {
+                curr: 1 //重新从第 1 页开始
+                }
+                ,where: {
+                key: {
+                    code: addReload.val(),
+                }
+                }
+            });
         })
+        // let zjbm = $("#zjbm").val();
+        // let item_name = $("#item_name").val();
+        // let model_no = $("#model_no").val();
+        // let unit = $("#unit").val();
+        // $.ajax({
+        //     type: "GET",
+        //     url: ajaxFindInventoryUrl + '?code=' + zjbm,
+        //     success: function(returnData){
+        //         $("#item_name").val(returnData.data.cInvName);
+        //         $("#model_no").val(returnData.data.cInvStd);
+        //     }
+        // })
     })
 });
 
