@@ -463,9 +463,8 @@
                     ,countName: 'count'
                     ,dataName: 'data'
                 }
-                ,cols: [[
-                     
-                    ,{field:'RowId', title: 'ID'}
+                ,cols: [[ 
+                    {field:'RowId', title: 'ID'}
                     ,{field:'cInvName', title: '名称'}
                     ,{field:'cInvCCode', title: '存货编码'}
                     ,{field:'cInvStd', title:'规格型号'}
