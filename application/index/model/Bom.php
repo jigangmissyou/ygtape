@@ -191,7 +191,7 @@ class Bom extends Model{
                 $item['dwcbzc'] = 0;
             } else {
                 $item['cldj'] = $item['zdjg'];
-                $item['dwcbzc'] = $item['dh']*$item['zdjg'];
+                $item['dwcbzc'] = round($item['dh']*$item['zdjg'], 2);
             }
         }
         $array = $this->searchArray($list);
@@ -199,9 +199,8 @@ class Bom extends Model{
             //开始遍历list
            if(substr($item['zjbm'], 0, 1) != 'A'){
                $item['cldj'] = $this->digui($item['zjbm'], $array);
-               $item['dwcbzc'] = $item['dh'] * $item['cldj'];
+               $item['dwcbzc'] = round($item['dh'] * $item['cldj'], 2);
            }
-           $item['dwcbzc'] = round($item['dwcbzc'], 2);
         }
         foreach($list as &$item){
             $item['zjjdpf'] = round($item['zjjdpf'], 2);
