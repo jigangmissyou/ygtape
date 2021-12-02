@@ -201,6 +201,7 @@ class Bom extends Model{
                $item['cldj'] = $this->digui($item['zjbm'], $array);
                $item['dwcbzc'] = $item['dh'] * $item['cldj'];
            }
+           $item['dwcbzc'] = round($item['dwcbzc'], 2);
         }
         foreach($list as &$item){
             $item['zjjdpf'] = round($item['zjjdpf'], 2);
@@ -213,7 +214,6 @@ class Bom extends Model{
             $item['bompfkz'] = round($item['bompfkz'], 2);
             $item['dh'] = round($item['dh'], 4);
             $item['cldj'] = round($item['cldj'], 2);
-            $item['dwcbzc'] = round($item['dwcbzc'], 2);
             $item['dwcbhj'] = round($this->compute($list, $item['mjbm']), 2);
             $item['dzdsl'] = round($item['dzdsl'], 4);
             //母件辅助单位
