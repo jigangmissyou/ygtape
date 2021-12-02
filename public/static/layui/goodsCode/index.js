@@ -118,18 +118,19 @@
             ,countName: 'count'
             ,dataName: 'data'
         }
+        ,width: '1420'
         ,cols: [[
-            ,{field:'id', title: 'ID'}
-            ,{field:'code', title: '编码'}
-            ,{field:'item_name', title: '名称'}
-            ,{field:'model_no', title: '规格型号'}
-            ,{field:'unit', title: '单位'}
-            ,{field:'price_with_tax', title: '含税价格'}
-            ,{field:'currency_type', title: '币种'}
-            ,{field:'local_currency', title: '本币价格'}
-            ,{field:'price_without_tax', title: '不含税价格'}
-            ,{field:'ctime', title: '添加日期'}
-            ,{field:'', title: '操作', toolbar:'#colHongYanBar'}
+            {field:'id', title: 'ID', width: '120'}
+            ,{field:'code', title: '编码', width: '120'}
+            ,{field:'item_name', title: '名称', width:'120'}
+            ,{field:'model_no', title: '规格型号', width:'120'}
+            ,{field:'unit', title: '单位', width:'120'}
+            ,{field:'price_with_tax', title: '含税价格', width:'120'}
+            ,{field:'currency_type', title: '币种', width:'120'}
+            ,{field:'local_currency', title: '本币价格', width:'120'}
+            ,{field:'price_without_tax', title: '不含税价格', width:'120'}
+            ,{field:'ctime', title: '添加日期', width:'120'}
+            ,{field:'', title: '操作', toolbar:'#colHongYanBar', width:'220'}
         ]]
         ,id: 'hongyan_list'
         ,page: true
@@ -239,36 +240,36 @@
                 ,dataName: 'data'
             }
             ,cols: [[
-                ,{field:'mjdl', title: '母件大类'}
-                ,{field:'mjbm', title: '母件编码'}
-                ,{field:'mjmc', title: '母件名称'}
-                ,{field:'mjchdm', title: '母件存货代码'}
-                ,{field:'mjggxh', title: '母件规格型号'}
-                ,{field:'mjjdpf', title: '母件卷到平方'}
-                ,{field:'mjjldw', title: '母件计量单位'}
-                ,{field:'zjxh', title: '子件序号'}
-                ,{field:'zjdl', title: '子件大类'}
-                ,{field:'zjbm', title: '子件编码'}
-                ,{field:'zjmc', title: '子件名称'}
-                ,{field:'zjdm', title: '子件代码'}
-                ,{field:'zjgg', title: '子件规格'}
-                ,{field:'zjjdpf', title: '子件卷到平方'}
-                ,{field:'jldw', title: '计量单位'}
-                ,{field:'gylx', title: '供应类型'}
-                ,{field:'jbyl', title: '基本用量'}
-                ,{field:'jcyl', title: '基础用量'}
-                ,{field:'bbwsdj', title: '本币无税单价', edit: 'text'}
-                ,{field:'zdjg', title: '取价MAX(不含税)'}
-                ,{field:'hyjg', title: '洪研价格', edit: 'text'}
-                ,{field:'zf', title: '涨幅'}
-                ,{field:'dzdsl', title: '打折的数量（膜和胶95%）'}
-                ,{field:'bompfkz', title: 'BOM平方克重'}
-                ,{field:'dh', title: '单耗'}
-                ,{field:'cldj', title: '材料单价'}
-                ,{field:'dwcbzc', title: '单位成本组成'}
-                ,{field:'dwcbhj', title: '单位成本合计'}
-                ,{field:'mjfzdw', title: '母件辅助单位'}
-                ,{field:'bomfzdwcb', title: 'BOM辅助单位成本(纯专用材料)'}
+                {field:'mjdl', title: '母件大类', width:'120'}
+                ,{field:'mjbm', title: '母件编码', width:'120'}
+                ,{field:'mjmc', title: '母件名称', width:'120'}
+                ,{field:'mjchdm', title: '母件存货代码', width:'120'}
+                ,{field:'mjggxh', title: '母件规格型号', width:'120'}
+                ,{field:'mjjdpf', title: '母件卷到平方', width:'120'}
+                ,{field:'mjjldw', title: '母件计量单位', width:'120'}
+                ,{field:'zjxh', title: '子件序号', width:'120'}
+                ,{field:'zjdl', title: '子件大类', width:'120'}
+                ,{field:'zjbm', title: '子件编码', width:'120'}
+                ,{field:'zjmc', title: '子件名称', width:'120'}
+                ,{field:'zjdm', title: '子件代码', width:'120'}
+                ,{field:'zjgg', title: '子件规格', width:'120'}
+                ,{field:'zjjdpf', title: '子件卷到平方', width:'120'}
+                ,{field:'jldw', title: '计量单位', width:'120'}
+                ,{field:'gylx', title: '供应类型', width:'120'}
+                ,{field:'jbyl', title: '基本用量', width:'120'}
+                ,{field:'jcyl', title: '基础用量', width:'120'}
+                ,{field:'bbwsdj', title: '本币无税单价', edit: 'text', width:'120'}
+                ,{field:'zdjg', title: '取价MAX(不含税)', width:'120'}
+                ,{field:'hyjg', title: '洪研价格', edit: 'text', width:'120'}
+                ,{field:'zf', title: '涨幅', width:'120'}
+                ,{field:'dzdsl', title: '打折的数量(膜和胶95%)', width:'120'}
+                ,{field:'bompfkz', title: 'BOM平方克重', width:'120'}
+                ,{field:'dh', title: '单耗', width:'120'}
+                ,{field:'cldj', title: '材料单价', width:'120'}
+                ,{field:'dwcbzc', title: '单位成本组成', width:'120'}
+                ,{field:'dwcbhj', title: '单位成本合计', width:'120'}
+                ,{field:'mjfzdw', title: '母件辅助单位', width:'120'}
+                ,{field:'bomfzdwcb', title: 'BOM辅助单位成本(纯专用材料)', width:'120'}
             ]]
             ,id: 'bom_list'
             ,page: true
