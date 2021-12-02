@@ -191,7 +191,7 @@ class Bom extends Model{
                 $item['dwcbzc'] = 0;
             } else {
                 $item['cldj'] = $item['zdjg'];
-                $item['dwcbzc'] = round($item['dh']*$item['zdjg'], 2);
+                $item['dwcbzc'] = round($item['dh'] * $item['zdjg'], 2);
             }
         }
         $array = $this->searchArray($list);
